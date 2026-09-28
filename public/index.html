@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineSearch – Movie Discovery Engine</title>
+    <meta name="description" content="Instantly search millions of movies with real-time suggestions powered by Elasticsearch." />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<!-- Hero -->
+<header class="hero">
+    <h1>🎬 CineSearch</h1>
+    <p>Discover movies instantly — powered by Elasticsearch</p>
+</header>
+
+<main class="container">
+
+    <!-- Search -->
+    <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+            id="search"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Search movies, actors, genres…"
+            aria-label="Search movies"
+            aria-autocomplete="list"
+            aria-controls="suggestions"
+        />
+        <button class="clear-btn" id="clearBtn" title="Clear search" aria-label="Clear search">✕</button>
+        <div id="suggestions" role="listbox" aria-label="Search suggestions"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+        <select id="genre" aria-label="Filter by genre">
+            <option value="">All Genres</option>
+        </select>
+        <input id="yearFrom" type="number" placeholder="From year" min="1900" max="2100" aria-label="From year" />
+        <input id="yearTo"   type="number" placeholder="To year"   min="1900" max="2100" aria-label="To year" />
+        <button class="search-btn" onclick="searchMovies()" id="searchBtn">Search</button>
+    </div>
+
+    <!-- Genre Facets -->
+    <div class="genres-section" id="genresSection" style="display:none;">
+        <div class="genres-label">Browse by genre</div>
+        <div id="genres"></div>
+    </div>
+
+    <!-- Results header -->
+    <div class="results-header" id="resultsHeader" style="display:none;">
+        <span class="results-count" id="resultsCount"></span>
+    </div>
+
+    <!-- Results Grid -->
+    <div id="results"></div>
+
+</main>
+
+<!-- Floating Add Button -->
+<button class="fab" id="fabBtn" onclick="openAddModal()" title="Add a movie" aria-label="Add a movie">
+    <span class="fab-icon">＋</span>
+    <span class="fab-label">Add Movie</span>
+</button>
+
+<!-- Add Movie Modal -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeAddModal()"></div>
+
+<div class="modal" id="addModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">🎬 Add a Movie</h2>
+        <button class="modal-close" onclick="closeAddModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <form id="addMovieForm" onsubmit="submitMovie(event)" novalidate>
+
+        <div class="form-grid">
+
+            <!-- Title -->
+            <div class="field full">
+                <label for="m-title">Title <span class="required">*</span></label>
+                <input id="m-title" name="title" type="text"
+                       placeholder="e.g. Inception" required autocomplete="off" />
+                <span class="field-hint">text — full-text search + boosting</span>
+            </div>
+
+            <!-- Description -->
+            <div class="field full">
+                <label for="m-description">Description <span class="required">*</span></label>
+                <textarea id="m-description" name="description" rows="3"
+                          placeholder="A brief synopsis of the movie…" required></textarea>
+                <span class="field-hint">text — full-text search</span>
+            </div>
+
+            <!-- Genre -->
+            <div class="field">
+                <label for="m-genre">Genre <span class="required">*</span></label>
+                <input id="m-genre" name="genre" type="text"
+                       placeholder="e.g. Action" required autocomplete="off" list="genre-datalist" />
+                <datalist id="genre-datalist"></datalist>
+                <span class="field-hint">keyword — filters &amp; aggregations</span>
+            </div>
+
+            <!-- Year -->
+            <div class="field">
+                <label for="m-year">Release Year <span class="required">*</span></label>
+                <input id="m-year" name="year" type="number"
+                       placeholder="e.g. 2024" min="1888" max="2100" required />
+                <span class="field-hint">integer — range filtering</span>
+            </div>
+
+            <!-- Rating -->
+            <div class="field">
+                <label for="m-rating">Rating (0–10) <span class="required">*</span></label>
+                <input id="m-rating" name="rating" type="number"
+                       placeholder="e.g. 8.5" min="0" max="10" step="0.1" required />
+                <span class="field-hint">float — sorting / filtering</span>
+            </div>
+
+            <!-- Poster URL -->
+            <div class="field">
+                <label for="m-poster">Poster URL <span class="optional">(optional)</span></label>
+                <input id="m-poster" name="poster_url" type="url"
+                       placeholder="https://…" />
+                <span class="field-hint">keyword — display only</span>
+            </div>
+
+        </div>
+
+        <!-- Error banner -->
+        <div class="form-error" id="formError"></div>
+
+        <div class="form-actions">
+            <button type="button" class="btn-ghost" onclick="closeAddModal()">Cancel</button>
+            <button type="submit" class="btn-primary" id="submitBtn">
+                <span id="submitLabel">Add Movie</span>
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
